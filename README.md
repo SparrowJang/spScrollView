@@ -10,6 +10,10 @@ bower install
 npm install
 ```
 
+## dependencies
+
+* polymer
+
 ## Usage
 
 ```html
