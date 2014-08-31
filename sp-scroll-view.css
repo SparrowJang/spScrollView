@@ -1,0 +1,22 @@
+
+:host {
+  width:100%;
+  display:block;
+}
+
+.outer-view-container {
+  width:100%;
+  overflow-x:hidden;
+}
+
+.scroll-view-container {
+  width:1000%;
+}
+
+polyfill-next-selector { content: '.scroll-view-container *'; }
+
+.scroll-view-container ::content * {
+  display:inline-block;
+}
+
+

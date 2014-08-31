@@ -1,0 +1,17 @@
+{
+"name": "sp-scroll-view",
+"version": "0.0.1",
+"authors": [
+"sparrow.jang <sparrow.jang@gmail.com>"
+],
+"description": "The views switch by drag and drop",
+"dependencies": {
+  "polymer": "Polymer/polymer"
+},
+"keywords": [
+"polymer",
+"scroll",
+"view"
+],
+"license": "MIT"
+}

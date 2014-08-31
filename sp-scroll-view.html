@@ -1,0 +1,188 @@
+
+<!--         on-mousedown="{{onMousedown}}"
+         on-mousemove="{{onMousemove}}"
+         on-mouseup="{{onMouseup}}"
+         on-touchstart="{{onMousedown}}"
+         on-touchmove="{{onMousemove}}"
+         on-touchend="{{onMouseup}}"
+-->
+
+<polymer-element name="sp-scroll-view">
+  <template>
+    <link rel="stylesheet" href="sp-scroll-view.css" />
+    <div class="outer-view-container"
+         on-trackstart="{{onTrackstart}}"
+         on-track="{{onTrack}}"
+         on-trackend="{{onTrackend}}"
+         >
+      <div id="container" class="scroll-view-container">
+        <content id="views" select="*"></content>
+      </div>
+    </div>
+  </template>
+  <script>
+
+    /*var hasTouch = "ontouchstart" in window;
+
+    var posUtils = {
+      get:(function(){
+
+        if ( !hasTouch ) {
+          return function( evt ){
+            return {x:evt.layerX,y:evt.layerY};
+          }
+        } else {
+          return function( evt ){
+            var touches = evt.changedTouches;
+            var touch = touches[0];
+            //console.log( evt );
+            return {x:touch.pageX,y:touch.pageY};
+          }
+        }
+
+      })()
+    };*/
+
+    Polymer('sp-scroll-view', {
+
+      ready:function(){
+        this.refresh();
+      },
+
+      getViews:function(){
+        return this.$.views.getDistributedNodes();
+      },
+
+      onTrackstart:function( evt ){
+        this.closeAnimation();
+        this.focusPos( evt.dx );
+        //console.log( pos.x );
+        this.mousedownInfo = {
+          time:(+ new Date()),
+          x:evt.dx
+        };
+
+      },
+
+      onTrack:function( evt ){
+        if ( this.mousedownInfo ) {
+          this.offsetPos( evt.dx - this.focusPos_.x );
+          this.focusPos( evt.dx );
+        }
+      },
+
+      onTrackend:function( evt ){
+        var offsetViewIndex = Math.round( this.getOffsetPos().x / this.clientWidth );
+        var diffTime = (+new Date()) - this.mousedownInfo.time;
+        var slideDiff = evt.dx - this.mousedownInfo.x;
+        if ( diffTime < 500 && Math.abs( slideDiff ) > 100 ) {
+          var slideIndex = slideDiff > 0 ? -1:1;
+          offsetViewIndex += slideIndex;
+        }
+        //console.log( diffTime );
+        this.moveByIndex( offsetViewIndex );
+        this.mousedownInfo = null;
+
+      },
+
+      refresh:function(){
+        var container = this.$.container;
+        var views = this.getViews();
+        var viewWidth = 100 / views.length;
+        container.style.width = ( views.length * 100 ) + "%";
+        for ( var i = 0; i < views.length ; i++ ) {
+          views[i].style.width = viewWidth + "%";
+        }
+        this.pos_ = {x:0};
+      },
+
+      getPosXRate_:function( x ){
+        var len = this.getViews().length;
+
+        var rate = ( x / this.clientWidth ) / len * 100;
+        return rate;
+      },
+
+      setContainerTransform:function( offsetX ){
+        var containerStyle = this.$.container.style;
+        containerStyle.transform = containerStyle.webkitTransform = "translate3d(" + ( - this.getPosXRate_( offsetX ) ) + "%,0,0)";
+      },
+
+      offsetPos:function( x ){
+        var offsetX = x - this.pos_.x;
+        this.setContainerTransform( -offsetX );
+        this.pos_.x = -offsetX;
+      },
+
+      setPos:function( x ){
+        this.setContainerTransform( x );
+        this.pos_.x = x;
+      },
+
+      getOffsetPos:function(){
+        return this.pos_;
+      },
+
+      focusPos:function( x ){
+        this.focusPos_ = {x:x};
+      },
+
+      /*onMousedown:function( evt ){
+        this.closeAnimation();
+        var pos = posUtils.get( evt );
+        this.focusPos( pos.x );
+        //console.log( pos.x );
+        this.mousedownInfo = {
+          time:(+ new Date()),
+          x:pos.x
+        };
+      },
+
+      onMousemove:function( evt ){
+
+        if ( this.mousedownInfo ) {
+          var pos = posUtils.get( evt );
+          this.offsetPos( pos.x - this.focusPos_.x );
+          this.focusPos( pos.x );
+        }
+      },*/
+
+      openAnimation:function(){
+        this.$.container.style.transition = ".3s";
+        this.$.container.style.animationTimingFunction = "ease";
+      },
+
+      closeAnimation:function(){
+        this.$.container.style.transition = "";
+      },
+
+      moveByIndex:function( index ){
+
+        var len = this.getViews().length;
+        index = index >= len ? (len - 1) :
+                index < 0    ? 0         : index;
+        var posX = index * this.clientWidth;
+        this.openAnimation();
+        this.setPos( posX );
+      }
+
+      /*,
+
+      onMouseup:function( evt ){
+        var offsetViewIndex = Math.round( this.getOffsetPos().x / this.clientWidth );
+        var diffTime = (+new Date()) - this.mousedownInfo.time;
+        var pos = posUtils.get( evt );
+        var slideDiff = pos.x - this.mousedownInfo.x
+        if ( diffTime < 500 && Math.abs( slideDiff ) > 100 ) {
+          var slideIndex = slideDiff > 0 ? -1:1;
+          offsetViewIndex += slideIndex;
+        }
+        //console.log( diffTime );
+        this.moveByIndex( offsetViewIndex );
+        this.mousedownInfo = null;
+      }*/
+      
+    });
+  </script>
+</polymer-element>
+
