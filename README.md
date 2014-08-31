@@ -3,6 +3,12 @@ sp-scroll-view
 
 Swtich views by drag and drop.
 
+## Install
+
+```bash
+bower install sp-scroll-view
+```
+
 ## Install dependencies
 
 ```bash
